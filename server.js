@@ -1,33 +1,41 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser'); // recupération des données d'un formulaire (.body)
+
+const jwt = require('jsonwebtoken');
 const api = express.Router();
 const auth = express.Router();
 const port = 4201;
 const secret = require('./configuration/secret');
 
-const authentification = require('./models/authentification');
+const users = require('./models/users');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 })); // permet de récupérer les données en post pour header Content-Type : "application/x-www-form-urlencoded";
 
-api.post('/login', (request, response) => {
+auth.post('/login', (request, response) => {
 
-    //console.log('request', request);
-    //console.log('response', response);
-
-    authentification.login(request.body, (result) => {
-        console.log(result.status);
-
-        if(result.status === 'success') {
-            console.log('success !!!!!');
-            response.json(result);
-        }else{
+    users.login(request.body, (result) => {
+        if (result.status === 'success') {
+            const token = jwt.sign({
+                iss: 'http//localhost:4201',
+                auth: true
+            }, secret);
+            response.json({
+                token,
+                result
+            });
+        } else {
             response.json(result);
         }
-        
+    });
+});
+
+api.get('/users', (request, response) => {
+    users.getAll((listUsers) => {
+        response.json(listUsers);
     });
 });
 
