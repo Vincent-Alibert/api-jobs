@@ -1,1 +1,1 @@
-API en node js de récupération d'offres d'emplois stocké en base de données mysql
+API en node js de récupération d'offres d'emplois stockées en base de données mysql
