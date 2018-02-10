@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({
 
 app.use((request, response, next)=>{
     response.header('Access-Control-Allow-Origin', '*');
+    next();
 });
 
 auth.post('/login', (request, response) => {
