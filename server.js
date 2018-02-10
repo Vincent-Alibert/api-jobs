@@ -9,6 +9,7 @@ const port = 4201;
 const secret = require('./configuration/secret');
 
 const users = require('./models/users');
+const offres = require('./models/offres');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -22,7 +23,7 @@ auth.post('/login', (request, response) => {
             const token = jwt.sign({
                 iss: 'http//localhost:4201',
                 auth: true
-            }, secret);
+            }, secret, {  expiresIn : '1h' });
             response.json({
                 token,
                 result
@@ -36,6 +37,20 @@ auth.post('/login', (request, response) => {
 api.get('/users', (request, response) => {
     users.getAll((listUsers) => {
         response.json(listUsers);
+    });
+});
+
+
+api.get('/offres/:id', (request, response) => {
+
+    offres.getOffresById(request.params.id, (listOffres) => {
+        response.json(listOffres);
+    });
+});
+
+api.get('/offres', (request, response) => {
+    offres.getAll((listOffres) => {
+        response.json(listOffres);
     });
 });
 
