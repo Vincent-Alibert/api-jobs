@@ -12,9 +12,14 @@ const users = require('./models/users');
 const offres = require('./models/offres');
 
 app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({
     extended: true
 })); // permet de récupérer les données en post pour header Content-Type : "application/x-www-form-urlencoded";
+
+app.use((request, response, next)=>{
+    response.header('Access-Control-Allow-Origin', '*');
+});
 
 auth.post('/login', (request, response) => {
 
