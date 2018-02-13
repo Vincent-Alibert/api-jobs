@@ -24,7 +24,7 @@ app.use((request, response, next) => {
 });
 
 auth.post('/login', (request, response) => {
-    console.log('request.body', request.body);
+    
     if (request.body) {
         users.login(request.body, (result) => {
             if (result.status === 'success') {

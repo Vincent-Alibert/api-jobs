@@ -21,6 +21,8 @@ function escapeHtml(text) {
 class Users {
 
     static login(content, cb) {
+
+        console.log('content', content);
         var mailClean ="";
         var passwordClean = "";
 
@@ -28,7 +30,7 @@ class Users {
             var mailClean = escapeHtml(content.emailUser.toLowerCase());
         }
         if (content.passwordUser) {
-            var passwordClean = escapeHtml(content.password);
+            var passwordClean = escapeHtml(content.passwordUser);
         }
 
         if (validateEmail(mailClean)) {
@@ -41,7 +43,7 @@ class Users {
                         if (error) {
                             cb({
                                 'status': 'error',
-                                'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                                'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                             });
                         } else {
                             if (results.length === 1) {
