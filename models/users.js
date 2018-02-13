@@ -22,12 +22,11 @@ class Users {
 
     static login(content, cb) {
 
-        console.log('content', content);
         var mailClean ="";
         var passwordClean = "";
 
         if (content.emailUser) {
-            var mailClean = escapeHtml(content.emailUser.toLowerCase());
+            var mailClean = escapeHtml(content.emailUser.toLowerCase().trim());
         }
         if (content.passwordUser) {
             var passwordClean = escapeHtml(content.passwordUser);

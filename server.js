@@ -24,7 +24,7 @@ app.use((request, response, next) => {
 });
 
 auth.post('/login', (request, response) => {
-    
+
     if (request.body) {
         users.login(request.body, (result) => {
             if (result.status === 'success') {
@@ -39,7 +39,7 @@ auth.post('/login', (request, response) => {
                     result
                 });
             } else {
-                response.json(result);
+                response.json({'result': result});
             }
         });
     } else {
