@@ -4,16 +4,39 @@ function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
+/*html specialchars en js */
+function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        '\'': '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function (m) {
+        return map[m];
+    });
+}
 
 class Users {
 
     static login(content, cb) {
-        if (validateEmail(content.mail)) {
+        var mailClean ="";
+        var passwordClean = "";
+
+        if (content.emailUser) {
+            var mailClean = escapeHtml(content.emailUser.toLowerCase());
+        }
+        if (content.passwordUser) {
+            var passwordClean = escapeHtml(content.password);
+        }
+
+        if (validateEmail(mailClean)) {
             pool.getConnection(function (err, connection) {
                 connection.query(`SELECT nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,administrateur,entreprise
                  FROM user 
                  WHERE mailUser = ? 
-                 AND password = ?`, [content.mail, content.password],
+                 AND password = ?`, [mailClean, passwordClean],
                     (error, results) => {
                         if (error) {
                             cb({

@@ -17,27 +17,38 @@ app.use(bodyParser.urlencoded({
     extended: true
 })); // permet de récupérer les données en post pour header Content-Type : "application/x-www-form-urlencoded";
 
-app.use((request, response, next)=>{
+app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Headers', 'Content-type');
     next();
 });
 
 auth.post('/login', (request, response) => {
+    console.log('request.body', request.body);
+    if (request.body) {
+        users.login(request.body, (result) => {
+            if (result.status === 'success') {
+                const token = jwt.sign({
+                    iss: 'http//localhost:4201',
+                    auth: true
+                }, secret, {
+                    expiresIn: '1h'
+                });
+                response.json({
+                    token,
+                    result
+                });
+            } else {
+                response.json(result);
+            }
+        });
+    } else {
+        res.json({
+            'status': 'error',
+            'user': 'Données manquantes'
+        })
+    }
 
-    users.login(request.body, (result) => {
-        if (result.status === 'success') {
-            const token = jwt.sign({
-                iss: 'http//localhost:4201',
-                auth: true
-            }, secret, {  expiresIn : '1h' });
-            response.json({
-                token,
-                result
-            });
-        } else {
-            response.json(result);
-        }
-    });
 });
 
 api.get('/users', (request, response) => {
