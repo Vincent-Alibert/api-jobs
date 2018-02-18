@@ -30,20 +30,20 @@ auth.post('/login', (request, response) => {
             if (result.status === 'success') {
                 const token = jwt.sign({
                     iss: 'http//localhost:4201',
-                    auth: true
+                    auth: true,
+                    value: result
                 }, secret, {
                     expiresIn: '1h'
                 });
                 response.json({
-                    token,
-                    result
+                    token, 
                 });
             } else {
-                response.json({'result': result});
+                response.status(401).json({'result': result});
             }
         });
     } else {
-        res.json({
+        response.status(500).json({
             'status': 'error',
             'user': 'Données manquantes'
         })

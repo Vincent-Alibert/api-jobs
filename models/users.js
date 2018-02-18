@@ -34,7 +34,7 @@ class Users {
 
         if (validateEmail(mailClean)) {
             pool.getConnection(function (err, connection) {
-                connection.query(`SELECT nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,administrateur,entreprise
+                connection.query(`SELECT idUser,nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,administrateur,entreprise
                  FROM user 
                  WHERE mailUser = ? 
                  AND password = ?`, [mailClean, passwordClean],
@@ -78,7 +78,7 @@ class Users {
                 if (error) {
                     cb({
                         'status': 'error',
-                        'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                        'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                     });
                 } else {
                     cb({
