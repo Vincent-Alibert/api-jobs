@@ -22,7 +22,7 @@ class Users {
 
     static login(content, cb) {
 
-        var mailClean ="";
+        var mailClean = "";
         var passwordClean = "";
 
         if (content.emailUser) {
@@ -75,21 +75,125 @@ class Users {
             connection.query(`SELECT nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,administrateur,entreprise
                  FROM user 
                  `, (error, results) => {
-                if (error) {
-                    cb({
-                        'status': 'error',
-                        'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
-                    });
-                } else {
-                    cb({
-                        'status': 'success',
-                        'user': results
-                    });
-                }
-                connection.release();
-            });
+                    if (error) {
+                        cb({
+                            'status': 'error',
+                            'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                        });
+                    } else {
+                        cb({
+                            'status': 'success',
+                            'user': results
+                        });
+                    }
+                    connection.release();
+                });
 
         });
+    }
+
+    static addUser(content, cb) {
+        var mailClean;
+        var status;
+        var isFirm;
+        var latituteIsFloat;
+        var longitudeIsFloat;
+        var arrayError = [];
+
+        if (content.user.hasOwnProperty('nomUser') &&
+            content.user.hasOwnProperty('prenomUser') &&
+            content.user.hasOwnProperty('mailUser') &&
+            content.user.hasOwnProperty('passwordUser') &&
+            content.user.hasOwnProperty('dateInscription') &&
+            content.user.hasOwnProperty('codePostalUser') &&
+            content.user.hasOwnProperty('nomEnt') &&
+            content.user.hasOwnProperty('latitudeEnt') &&
+            content.user.hasOwnProperty('longitudeEnt') &&
+            content.user.hasOwnProperty('photoUser') &&
+            content.user.hasOwnProperty('imageUser') &&
+            content.user.hasOwnProperty('entreprise') &&
+            content.user.hasOwnProperty('administrateur')) {
+
+            mailClean = escapeHtml(content.user.mailUser.toLowerCase().trim());
+            isFirm = parseInt(content.user.entreprise);
+            latituteIsFloat = parseFloat(content.user.latitudeEnt);
+            longitudeIsFloat = parseFloat(content.user.longitudeEnt);
+
+            if (isNaN(isFirm)) {
+                arrayError.push('dataError');
+            }
+            if (!validateEmail(mailClean)) {
+                arrayError.push('mailUser');
+            }
+            if (isFirm === 0) {
+                for (var prop in content.user) {
+                    if (prop === 'nomEnt' || prop === 'latitudeEnt' || prop === 'longitudeEnt') {
+                        content.user[prop] = null;
+                    }
+                    if (content.user[prop] === 'undefined' || content.user[prop] === '') {
+                        arrayError.push(prop);
+                    }
+                }
+            } else if (isFirm === 1) {
+                if (isNaN(latituteIsFloat) || isNaN(longitudeIsFloat)) {
+                    arrayError.push('coordoneeGeoError');
+                }
+                for (var prop in content.user) {
+                    if (content.user[prop] === 'undefined' || content.user[prop] === '' || content.user[prop] === null) {
+                        arrayError.push(prop);
+                    }
+                }
+            }
+        } else {
+            arrayError.push('dataMissing');
+        }
+        if (arrayError.length > 0) {
+            status = 'errors';
+            cb({
+                status: status,
+                arrayError
+            });
+        } else {
+            console.log('content', content);
+            pool.getConnection(function (err, connection) {
+                connection.query(`INSERT INTO user(idUser, nomUser, prenomUser, mailUser, password, dateInscription, rueUser, codePostalUser, villeUser, nomEnt, latitudeEnt, longitudeEnt, photoUser, imageUser, administrateur, entreprise) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [null,
+                    content.user.nomUser,
+                    content.user.prenomUser,
+                    content.user.mailUser,
+                    content.user.passwordUser,
+                    content.user.dateInscription,
+                    content.user.rueUser,
+                    content.user.codePostalUser,
+                    content.user.villeUser,
+                    content.user.nomEnt,
+                    content.user.latitudeEnt,
+                    content.user.longitudeEnt,
+                    content.user.photoUser,
+                    content.user.imageUser,
+                    content.user.administrateur,
+                    content.user.entreprise
+                ],
+                    (error, results) => {
+                        if (error) {
+                            console.log('error', error);
+                            status = 'errors';
+                            arrayError.push('queryFailed');
+                            cb({
+                                status: status,
+                                arrayError
+                            });
+                        } else {
+                            console.log('result', results);
+                            status = 'success';
+                            cb({
+                                status: status,
+                                arrayError
+                            });
+                        }
+                        connection.release();
+                    });
+            });
+        }
     }
 }
 

@@ -51,6 +51,24 @@ auth.post('/login', (request, response) => {
 
 });
 
+api.post('/users/add', (request, response) => {
+    
+    if (request.body) {
+        users.addUser(request.body, (result) => {
+            if (result.status === 'success') {
+                response.json({result});
+            } else {
+                response.json({result});
+            }
+        });
+    } else {
+        response.status(500).json({
+            'status': 'error',
+            'user': 'Données manquantes'
+        });
+    }
+})
+
 api.get('/users', (request, response) => {
     users.getAll((listUsers) => {
         response.json(listUsers);
