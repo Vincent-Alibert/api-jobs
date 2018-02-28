@@ -75,6 +75,23 @@ api.get('/users', (request, response) => {
     });
 });
 
+api.post('/offres/add', (request, response) => {
+    
+    if (request.body) {
+        offres.addOffre(request.body, (result) => {
+            if (result.status === 'success') {
+                response.json({result});
+            } else {
+                response.json({result});
+            }
+        });
+    } else {
+        response.status(500).json({
+            'status': 'error',
+            'offre': 'Données manquantes'
+        });
+    }
+})
 
 api.get('/offres/:id', (request, response) => {
 
