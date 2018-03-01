@@ -11,6 +11,30 @@ const secret = require('./configuration/secret');
 const users = require('./models/users');
 const offres = require('./models/offres');
 
+const checkUserToken = (req, res, next) => {
+    if (!req.header('authorization')) {
+        return res.status(401).json({
+            status: 'error'
+        });
+    }
+
+    console.log("req.header('authorization')", req.header('authorization'));
+    const authorizationParts = req.header('authorization').split(' ');
+
+    let token = authorizationParts[1];
+  
+    const decodeToken = jwt.verify(token, secret, (error, decodeToken) => {
+        if (error) {
+            return res.status(401).json({
+                status: 'error'
+            });
+        } else {
+            next();
+        }
+    });
+
+}
+
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({
@@ -19,7 +43,7 @@ app.use(bodyParser.urlencoded({
 
 app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*');
-    response.header('Access-Control-Allow-Headers', 'Content-type');
+    response.header('Access-Control-Allow-Headers', 'Content-type, Authorization');
     next();
 });
 
@@ -28,18 +52,25 @@ auth.post('/login', (request, response) => {
     if (request.body) {
         users.login(request.body, (result) => {
             if (result.status === 'success') {
+                // const token = jwt.sign({
+                //     iss: 'http//localhost:4201',
+                //     auth: true,
+                //     value: result
+                // }, secret, {
+                //         expiresIn: '1h'
+                //     });
                 const token = jwt.sign({
                     iss: 'http//localhost:4201',
                     auth: true,
                     value: result
-                }, secret, {
-                    expiresIn: '1h'
-                });
+                }, secret);
                 response.json({
-                    token, 
+                    token,
                 });
             } else {
-                response.status(401).json({'result': result});
+                response.status(401).json({
+                    'result': result
+                });
             }
         });
     } else {
@@ -52,13 +83,17 @@ auth.post('/login', (request, response) => {
 });
 
 api.post('/users/add', (request, response) => {
-    
+
     if (request.body) {
         users.addUser(request.body, (result) => {
             if (result.status === 'success') {
-                response.json({result});
+                response.json({
+                    result
+                });
             } else {
-                response.json({result});
+                response.json({
+                    result
+                });
             }
         });
     } else {
@@ -75,14 +110,18 @@ api.get('/users', (request, response) => {
     });
 });
 
-api.post('/offres/add', (request, response) => {
-    
+api.post('/offres/add', checkUserToken, (request, response) => {
+
     if (request.body) {
         offres.addOffre(request.body, (result) => {
             if (result.status === 'success') {
-                response.json({result});
+                response.json({
+                    result
+                });
             } else {
-                response.json({result});
+                response.json({
+                    result
+                });
             }
         });
     } else {
