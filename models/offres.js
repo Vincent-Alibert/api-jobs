@@ -74,8 +74,6 @@ class Offres {
         var dateDebutPosteOk;
         var datePublicationOk;
 
-        console.log('content', content);
-
         if (content.offre.hasOwnProperty('titreOffre') &&
             content.offre.hasOwnProperty('datePublication') &&
             content.offre.hasOwnProperty('dateDebutPoste') &&
@@ -92,8 +90,6 @@ class Offres {
             latituteIsFloat = parseFloat(content.offre.latitude);
             longitudeIsFloat = parseFloat(content.offre.longitude);
             datePublicationOk = new Date(content.offre.datePublication);
-
-            console.log('datePublicationOk',datePublicationOk.toString());
 
             if (datePublicationOk.toString() === 'Invalid Date'){
                 arrayError.push('DateError');

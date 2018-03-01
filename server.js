@@ -18,7 +18,6 @@ const checkUserToken = (req, res, next) => {
         });
     }
 
-    console.log("req.header('authorization')", req.header('authorization'));
     const authorizationParts = req.header('authorization').split(' ');
 
     let token = authorizationParts[1];

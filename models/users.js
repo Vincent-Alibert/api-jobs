@@ -154,7 +154,6 @@ class Users {
                 arrayError
             });
         } else {
-            console.log('content', content);
             pool.getConnection(function (err, connection) {
                 connection.query(`INSERT INTO user(idUser, nomUser, prenomUser, mailUser, password, dateInscription, rueUser, codePostalUser, villeUser, nomEnt, latitudeEnt, longitudeEnt, photoUser, imageUser, administrateur, entreprise) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [null,
                     content.user.nomUser,
