@@ -91,11 +91,11 @@ class Offres {
             longitudeIsFloat = parseFloat(content.offre.longitude);
             datePublicationOk = new Date(content.offre.datePublication);
 
-            if (datePublicationOk.toString() === 'Invalid Date'){
+            if (datePublicationOk.toString() === 'Invalid Date') {
                 arrayError.push('DateError');
             }
-           
-            if(!validateDate(content.offre.dateDebutPoste)) {
+
+            if (!validateDate(content.offre.dateDebutPoste)) {
                 arrayError.push('DateError');
             }
 
@@ -153,6 +153,7 @@ class Offres {
             });
         }
     }
+
 }
 
 module.exports = Offres;

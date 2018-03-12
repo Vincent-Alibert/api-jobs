@@ -21,7 +21,7 @@ const checkUserToken = (req, res, next) => {
     const authorizationParts = req.header('authorization').split(' ');
 
     let token = authorizationParts[1];
-  
+
     const decodeToken = jwt.verify(token, secret, (error, decodeToken) => {
         if (error) {
             return res.status(401).json({
@@ -99,6 +99,28 @@ api.post('/users/add', (request, response) => {
         response.status(500).json({
             'status': 'error',
             'user': 'Données manquantes'
+        });
+    }
+})
+
+api.get('/users/count-data', checkUserToken, (request, response) => {
+
+    if (request.body) {
+        users.getCountData((result) => {
+            if (result.status === 'success') {
+                response.json({
+                    result
+                });
+            } else {
+                response.json({
+                    result
+                });
+            }
+        });
+    } else {
+        response.status(500).json({
+            'status': 'error',
+            'offre': 'Données manquantes'
         });
     }
 })

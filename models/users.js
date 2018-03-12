@@ -75,19 +75,19 @@ class Users {
             connection.query(`SELECT nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,administrateur,entreprise
                  FROM user 
                  `, (error, results) => {
-                    if (error) {
-                        cb({
-                            'status': 'error',
-                            'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
-                        });
-                    } else {
-                        cb({
-                            'status': 'success',
-                            'user': results
-                        });
-                    }
-                    connection.release();
-                });
+                if (error) {
+                    cb({
+                        'status': 'error',
+                        'user': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                    });
+                } else {
+                    cb({
+                        'status': 'success',
+                        'user': results
+                    });
+                }
+                connection.release();
+            });
 
         });
     }
@@ -156,22 +156,22 @@ class Users {
         } else {
             pool.getConnection(function (err, connection) {
                 connection.query(`INSERT INTO user(idUser, nomUser, prenomUser, mailUser, password, dateInscription, rueUser, codePostalUser, villeUser, nomEnt, latitudeEnt, longitudeEnt, photoUser, imageUser, administrateur, entreprise) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [null,
-                    content.user.nomUser,
-                    content.user.prenomUser,
-                    content.user.mailUser,
-                    content.user.passwordUser,
-                    content.user.dateInscription,
-                    content.user.rueUser,
-                    content.user.codePostalUser,
-                    content.user.villeUser,
-                    content.user.nomEnt,
-                    content.user.latitudeEnt,
-                    content.user.longitudeEnt,
-                    content.user.photoUser,
-                    content.user.imageUser,
-                    content.user.administrateur,
-                    content.user.entreprise
-                ],
+                        content.user.nomUser,
+                        content.user.prenomUser,
+                        content.user.mailUser,
+                        content.user.passwordUser,
+                        content.user.dateInscription,
+                        content.user.rueUser,
+                        content.user.codePostalUser,
+                        content.user.villeUser,
+                        content.user.nomEnt,
+                        content.user.latitudeEnt,
+                        content.user.longitudeEnt,
+                        content.user.photoUser,
+                        content.user.imageUser,
+                        content.user.administrateur,
+                        content.user.entreprise
+                    ],
                     (error, results) => {
                         if (error) {
                             console.log('error', error);
@@ -194,6 +194,31 @@ class Users {
             });
         }
     }
+
+    static getCountData(cb) {
+        pool.getConnection(function (err, connection) {
+            connection.query(`SELECT 
+            (SELECT COUNT(idUser) FROM user) AS nombreUser,
+            (SELECT COUNT(entreprise) FROM user WHERE entreprise = 1) AS nombreFirm, 
+            (SELECT COUNT(idOffre) FROM offre) AS nombreOffre `, (error, results) => {
+                if (error) {
+                    console.log('error', error);
+                    cb({
+                        'status': 'error',
+                        'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                    });
+                } else {
+                    console.log('results', results.RowDataPacket);
+                    cb({
+                        'status': 'success',
+                        'countData': results
+                    });
+                }
+                connection.release();
+            });
+        });
+    }
+
 }
 
 module.exports = Users;
