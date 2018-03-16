@@ -150,7 +150,29 @@ api.get('/public/images/fond/:name', (request, response) => {
         if (err) {
             response.status(404).json({
                 'status': 'error',
-                'data': 'image not'
+                'data': 'image not found'
+            });
+        }
+      });
+});
+
+api.get('/public/images/profil/:name', (request, response) => {
+
+    var options = {
+        root: __dirname + '/public/images/profil/',
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true
+        }
+      };
+    
+      var fileName = request.params.name;
+      response.sendFile(fileName, options, function (err) {
+        if (err) {
+            response.status(404).json({
+                'status': 'error',
+                'data': 'image not found'
             });
         } else {
           console.log('Sent:', fileName);
