@@ -108,13 +108,9 @@ api.get('/users/count-data', checkUserToken, (request, response) => {
     if (request.body) {
         users.getCountData((result) => {
             if (result.status === 'success') {
-                response.json({
-                    result
-                });
+                response.json({result});
             } else {
-                response.json({
-                    result
-                });
+                response.json({result});
             }
         });
     } else {
@@ -125,10 +121,42 @@ api.get('/users/count-data', checkUserToken, (request, response) => {
     }
 })
 
-api.get('/users', (request, response) => {
+api.get('/users/:id', checkUserToken, (request, response) => {
+
+    users.getUserById(request.params.id, (userDetails) => {
+        response.json(userDetails);
+    });
+});
+
+api.get('/users', checkUserToken,(request, response) => {
     users.getAll((listUsers) => {
         response.json(listUsers);
     });
+});
+
+api.get('/public/images/fond/:name', (request, response) => {
+
+    var options = {
+        root: __dirname + '/public/images/fond/',
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true
+        }
+      };
+    
+      var fileName = request.params.name;
+      response.sendFile(fileName, options, function (err) {
+        if (err) {
+            response.status(404).json({
+                'status': 'error',
+                'data': 'image not'
+            });
+        } else {
+          console.log('Sent:', fileName);
+        }
+      });
+
 });
 
 api.post('/offres/add', checkUserToken, (request, response) => {
