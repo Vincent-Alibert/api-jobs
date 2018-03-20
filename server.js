@@ -81,6 +81,7 @@ auth.post('/login', (request, response) => {
 
 });
 
+/* Route pour les users */
 api.post('/users/add', (request, response) => {
 
     if (request.body) {
@@ -134,6 +135,8 @@ api.get('/users', checkUserToken,(request, response) => {
     });
 });
 
+
+/* Route pour les images */
 api.get('/public/images/fond/:name', (request, response) => {
 
     var options = {
@@ -181,6 +184,7 @@ api.get('/public/images/profil/:name', (request, response) => {
 
 });
 
+/* Route pour les offres */
 api.post('/offres/add', checkUserToken, (request, response) => {
 
     if (request.body) {
@@ -215,6 +219,15 @@ api.get('/offres', (request, response) => {
         response.json(listOffres);
     });
 });
+
+/* route candidature */
+api.get('/candidatures/:id', (req, res) => {
+    offres.getOffreByCandidatureId(req.params.id, (listePostesSelectionnes) => {
+        res.json(listePostesSelectionnes);
+    })
+});
+
+/* général */
 
 app.use('/api/v1', [api, auth]);
 

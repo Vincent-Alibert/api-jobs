@@ -154,6 +154,46 @@ class Offres {
         }
     }
 
+    /* partie concernant les candidatures */
+    static getOffreByCandidatureId(idUser, cb) {
+        var id = parseInt(idUser);
+        
+        if (Number.isInteger(id)) {
+            pool.getConnection(function (err, connection) {
+                connection.query(`SELECT * FROM offre 
+                INNER JOIN candidature 
+                ON fk_idOffre = idOffre 
+                WHERE candidature.fk_idUser = ?`, [id], (error, results) => {
+                        if (error) {
+                            cb({
+                                'status': 'error',
+                                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                            });
+                        } else {
+                            if (results.length > 0) {
+                                cb({
+                                    'status': 'success',
+                                    'candidature': results
+                                });
+                            } else {
+                                cb({
+                                    'status': 'error',
+                                    'idError': true,
+                                    'candidature': 'Cet utilisateur n\'a pas de candidature'
+                                });
+                            }
+                        }
+                        connection.release();
+                    });
+            });
+        } else {
+            cb({
+                'status': 'error',
+                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+            });
+        }
+    }
+
 }
 
 module.exports = Offres;
