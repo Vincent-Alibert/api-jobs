@@ -109,9 +109,9 @@ api.get('/users/count-data', checkUserToken, (request, response) => {
     if (request.body) {
         users.getCountData((result) => {
             if (result.status === 'success') {
-                response.json({result});
+                response.json({ result });
             } else {
-                response.json({result});
+                response.json({ result });
             }
         });
     } else {
@@ -129,7 +129,7 @@ api.get('/users/:id', checkUserToken, (request, response) => {
     });
 });
 
-api.get('/users', checkUserToken,(request, response) => {
+api.get('/users', checkUserToken, (request, response) => {
     users.getAll((listUsers) => {
         response.json(listUsers);
     });
@@ -146,17 +146,17 @@ api.get('/public/images/fond/:name', (request, response) => {
             'x-timestamp': Date.now(),
             'x-sent': true
         }
-      };
-    
-      var fileName = request.params.name;
-      response.sendFile(fileName, options, function (err) {
+    };
+
+    var fileName = request.params.name;
+    response.sendFile(fileName, options, function (err) {
         if (err) {
             response.status(404).json({
                 'status': 'error',
                 'data': 'image not found'
             });
         }
-      });
+    });
 });
 
 api.get('/public/images/profil/:name', (request, response) => {
@@ -168,19 +168,19 @@ api.get('/public/images/profil/:name', (request, response) => {
             'x-timestamp': Date.now(),
             'x-sent': true
         }
-      };
-    
-      var fileName = request.params.name;
-      response.sendFile(fileName, options, function (err) {
+    };
+
+    var fileName = request.params.name;
+    response.sendFile(fileName, options, function (err) {
         if (err) {
             response.status(404).json({
                 'status': 'error',
                 'data': 'image not found'
             });
         } else {
-          console.log('Sent:', fileName);
+            console.log('Sent:', fileName);
         }
-      });
+    });
 
 });
 
@@ -207,7 +207,7 @@ api.post('/offres/add', checkUserToken, (request, response) => {
     }
 })
 
-api.get('/offres/:id', (request, response) => {
+api.get('/offres/details/:id', (request, response) => {
 
     offres.getOffresById(request.params.id, (listOffres) => {
         response.json(listOffres);
@@ -221,12 +221,23 @@ api.get('/offres', (request, response) => {
 });
 
 /* route candidature */
+api.get('/candidatures/:idUser/select/:idOffre', (req, res) => {
+    offres.selectionOffre(req.params.idUser, req.params.idOffre, (data) => {
+        res.json(data);
+    })
+});
+
+api.get('/candidatures/:idUser/unselect/:idOffre', (req, res) => {
+    offres.unSelectionOffre(req.params.idUser, req.params.idOffre, (data) => {
+        res.json(data);
+    })
+});
+
 api.get('/candidatures/:id', (req, res) => {
     offres.getOffreByCandidatureId(req.params.id, (listePostesSelectionnes) => {
         res.json(listePostesSelectionnes);
     })
 });
-
 /* général */
 
 app.use('/api/v1', [api, auth]);

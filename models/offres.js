@@ -8,7 +8,7 @@ function validateDate(date) {
 class Offres {
     static getAll(cb) {
         pool.getConnection(function (err, connection) {
-            connection.query(`SELECT * FROM offre 
+            connection.query(`SELECT * FROM offre ORDER BY datePublication DESC
                  `, (error, results) => {
                     if (error) {
                         cb({
@@ -157,7 +157,7 @@ class Offres {
     /* partie concernant les candidatures */
     static getOffreByCandidatureId(idUser, cb) {
         var id = parseInt(idUser);
-        
+
         if (Number.isInteger(id)) {
             pool.getConnection(function (err, connection) {
                 connection.query(`SELECT * FROM offre 
@@ -190,6 +190,63 @@ class Offres {
             cb({
                 'status': 'error',
                 'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+            });
+        }
+    }
+
+    static selectionOffre(idUser, idOffre, cb) {
+        var idUserClean = parseInt(idUser);
+        var idOffreClean = parseInt(idOffre);
+
+        if (Number.isInteger(idUserClean) && Number.isInteger(idOffreClean)) {
+            pool.getConnection(function (err, connection) {
+                connection.query(`INSERT INTO candidature (fk_idUser, fk_idOffre, dateCandidature) VALUES (?,?, NOW() ) `, [idUserClean, idOffreClean], (error, results) => {
+                    if (error) {
+                        cb({
+                            'status': 'error',
+                            'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                        });
+                    } else {
+                        cb({
+                            'status': 'success',
+                        });
+                    }
+                    connection.release();
+                });
+            });
+        } else {
+            cb({
+                'status': 'error',
+                'candidature': 'L\'utilisateur ou l\'offre n\'existe pas.'
+            });
+        }
+    }
+
+    static unSelectionOffre(idUser, idOffre, cb) {
+        var idUserClean = parseInt(idUser);
+        var idOffreClean = parseInt(idOffre);
+
+        if (Number.isInteger(idUserClean) && Number.isInteger(idOffreClean)) {
+            pool.getConnection(function (err, connection) {
+                connection.query(`DELETE FROM candidature WHERE fk_idUser = ? AND fk_idOffre = ?`,
+                 [idUserClean, idOffreClean], (error, results) => {
+                    if (error) {
+                        cb({
+                            'status': 'error',
+                            'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                        });
+                    } else {
+                        cb({
+                            'status': 'success',
+                        });
+                    }
+                    connection.release();
+                });
+            });
+        } else {
+            cb({
+                'status': 'error',
+                'candidature': 'L\'utilisateur ou l\'offre n\'existe pas.'
             });
         }
     }
