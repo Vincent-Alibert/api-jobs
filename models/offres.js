@@ -8,12 +8,16 @@ function validateDate(date) {
 class Offres {
     static getAll(cb) {
         pool.getConnection(function (err, connection) {
-            connection.query(`SELECT * FROM offre ORDER BY datePublication DESC
+            connection.query(`SELECT titreOffre, datePublication, dateDebutPoste, introduction, description, latitude, longitude, rueOffre, codePostalOffre, villeOffre, salaireOffre, idOffre, mailUser 
+            FROM offre 
+            INNER JOIN user
+            ON fk_idUser = idUser
+            ORDER BY datePublication DESC
                  `, (error, results) => {
                     if (error) {
                         cb({
                             'status': 'error',
-                            'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                            'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                         });
                     } else {
                         cb({
@@ -31,13 +35,15 @@ class Offres {
         var id = parseInt(idOffre);
         if (Number.isInteger(id)) {
             pool.getConnection(function (err, connection) {
-                connection.query(`SELECT * 
-            FROM offre
-            WHERE idOffre = ?`, [idOffre], (error, results) => {
+                connection.query(`SELECT titreOffre, datePublication, dateDebutPoste, introduction, description, latitude, longitude, rueOffre, codePostalOffre, villeOffre, salaireOffre, idOffre, mailUser 
+                FROM offre 
+                INNER JOIN user
+                ON fk_idUser = idUser
+                WHERE idOffre = ?`, [idOffre], (error, results) => {
                         if (error) {
                             cb({
                                 'status': 'error',
-                                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                             });
                         } else {
                             if (results.length === 1) {
@@ -60,7 +66,7 @@ class Offres {
         } else {
             cb({
                 'status': 'error',
-                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
             });
         }
     }
