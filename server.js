@@ -207,9 +207,36 @@ api.post('/offres/add', checkUserToken, (request, response) => {
     }
 })
 
-api.get('/offres/details/:id', (request, response) => {
+api.post('/offres/delete', (request, response) => {
+    if (request.body) {
+        offres.deleteOffre(request.body, (result) => {
+            if (result.status === 'success') {
+                response.json({
+                    result
+                });
+            } else {
+                response.json({
+                    result
+                });
+            }
+        });
+    } else {
+        response.status(500).json({
+            'status': 'error',
+            'offre': 'Données manquantes'
+        });
+    }
+})
 
+
+api.get('/offres/details/:id', (request, response) => {
     offres.getOffresById(request.params.id, (listOffres) => {
+        response.json(listOffres);
+    });
+});
+
+api.get('/offres/user/:id', (request, response) => {
+    offres.getOffresByIdUser(request.params.id, (listOffres) => {
         response.json(listOffres);
     });
 });
