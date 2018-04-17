@@ -93,6 +93,8 @@ class Users {
     }
 
     static addUser(content, cb) {
+        console.log('content', content);
+        
         var mailClean;
         var status;
         var isFirm;
@@ -111,6 +113,7 @@ class Users {
             content.user.hasOwnProperty('longitudeEnt') &&
             content.user.hasOwnProperty('photoUser') &&
             content.user.hasOwnProperty('imageUser') &&
+            content.user.hasOwnProperty('cvUser') &&
             content.user.hasOwnProperty('entreprise') &&
             content.user.hasOwnProperty('administrateur')) {
 
@@ -155,7 +158,7 @@ class Users {
             });
         } else {
             pool.getConnection(function (err, connection) {
-                connection.query(`INSERT INTO user(idUser, nomUser, prenomUser, mailUser, password, dateInscription, rueUser, codePostalUser, villeUser, nomEnt, latitudeEnt, longitudeEnt, photoUser, imageUser, administrateur, entreprise) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [null,
+                connection.query(`INSERT INTO user(idUser, nomUser, prenomUser, mailUser, password, dateInscription, rueUser, codePostalUser, villeUser, nomEnt, latitudeEnt, longitudeEnt, photoUser, imageUser, cvUser, administrateur, entreprise) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, [null,
                     content.user.nomUser,
                     content.user.prenomUser,
                     content.user.mailUser,
@@ -169,20 +172,24 @@ class Users {
                     content.user.longitudeEnt,
                     content.user.photoUser,
                     content.user.imageUser,
+                    content.user.cvUser,
                     content.user.administrateur,
                     content.user.entreprise
                 ],
                     (error, results) => {
                         if (error) {
-                            console.log('error', error);
+                            console.log('error',error);
+                            
                             status = 'errors';
+                            if (error.code == 'ER_DUP_ENTRY') {
+                                arrayError.push('ER_DUP_ENTRY');
+                            }
                             arrayError.push('queryFailed');
                             cb({
                                 status: status,
                                 arrayError
                             });
                         } else {
-                            console.log('result', results);
                             status = 'success';
                             cb({
                                 status: status,

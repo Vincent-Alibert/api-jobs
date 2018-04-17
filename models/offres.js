@@ -14,19 +14,19 @@ class Offres {
             ON fk_idUser = idUser
             ORDER BY datePublication DESC
                  `, (error, results) => {
-                if (error) {
-                    cb({
-                        'status': 'error',
-                        'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
-                    });
-                } else {
-                    cb({
-                        'status': 'success',
-                        'offre': results
-                    });
-                }
-                connection.release();
-            });
+                    if (error) {
+                        cb({
+                            'status': 'error',
+                            'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                        });
+                    } else {
+                        cb({
+                            'status': 'success',
+                            'offre': results
+                        });
+                    }
+                    connection.release();
+                });
 
         });
     }
@@ -40,27 +40,27 @@ class Offres {
                 INNER JOIN user
                 ON fk_idUser = idUser
                 WHERE idOffre = ?`, [idOffre], (error, results) => {
-                    if (error) {
-                        cb({
-                            'status': 'error',
-                            'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
-                        });
-                    } else {
-                        if (results.length === 1) {
-                            cb({
-                                'status': 'success',
-                                'offre': results
-                            });
-                        } else {
+                        if (error) {
                             cb({
                                 'status': 'error',
-                                'idError': true,
-                                'offre': 'Cette offre n\'existe pas '
+                                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                             });
+                        } else {
+                            if (results.length === 1) {
+                                cb({
+                                    'status': 'success',
+                                    'offre': results
+                                });
+                            } else {
+                                cb({
+                                    'status': 'error',
+                                    'idError': true,
+                                    'offre': 'Cette offre n\'existe pas '
+                                });
+                            }
                         }
-                    }
-                    connection.release();
-                });
+                        connection.release();
+                    });
 
             });
         } else {
@@ -82,27 +82,27 @@ class Offres {
                 ON fk_idUser = idUser
                 WHERE fk_idUser = ?
                 ORDER BY datePublication DESC`, [idUser], (error, results) => {
-                    if (error) {
-                        cb({
-                            'status': 'error',
-                            'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
-                        });
-                    } else {
-                        if (results.length > 1) {
-                            cb({
-                                'status': 'success',
-                                'offre': results
-                            });
-                        } else {
+                        if (error) {
                             cb({
                                 'status': 'error',
-                                'idUser': true,
-                                'offre': 'Cette offre n\'existe pas '
+                                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                             });
+                        } else {
+                            if (results.length > 1) {
+                                cb({
+                                    'status': 'success',
+                                    'offre': results
+                                });
+                            } else {
+                                cb({
+                                    'status': 'error',
+                                    'idUser': true,
+                                    'offre': 'Cette offre n\'existe pas '
+                                });
+                            }
                         }
-                    }
-                    connection.release();
-                });
+                        connection.release();
+                    });
 
             });
         } else {
@@ -168,19 +168,19 @@ class Offres {
         } else {
             pool.getConnection(function (err, connection) {
                 connection.query(`INSERT INTO offre(idOffre, titreOffre, datePublication, dateDebutPoste, introduction, description, latitude, longitude, rueOffre, codePostalOffre, villeOffre, salaireOffre, fk_idUser) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`, [null,
-                        content.offre.titreOffre,
-                        content.offre.datePublication,
-                        content.offre.dateDebutPoste,
-                        content.offre.introduction,
-                        content.offre.description,
-                        content.offre.latitude,
-                        content.offre.longitude,
-                        content.offre.rueOffre,
-                        content.offre.codePostalOffre,
-                        content.offre.villeOffre,
-                        content.offre.salaireOffre,
-                        content.offre.fk_idUser
-                    ],
+                    content.offre.titreOffre,
+                    content.offre.datePublication,
+                    content.offre.dateDebutPoste,
+                    content.offre.introduction,
+                    content.offre.description,
+                    content.offre.latitude,
+                    content.offre.longitude,
+                    content.offre.rueOffre,
+                    content.offre.codePostalOffre,
+                    content.offre.villeOffre,
+                    content.offre.salaireOffre,
+                    content.offre.fk_idUser
+                ],
                     (error, results) => {
                         if (error) {
                             status = 'errors';
@@ -210,7 +210,18 @@ class Offres {
                         if (error) {
                             cb({
                                 'status': 'error',
-                                'offre' : 'Erreur durant la requete. Veillez nous excuser'
+                                'offre': 'Erreur durant la requete. Veillez nous excuser'
+                            });
+                        }
+                    });
+            });
+            pool.getConnection(function (err, connection) {
+                connection.query(`DELETE FROM candidature where fk_idOffre = ?`, [id],
+                    (error, results) => {
+                        if (error) {
+                            cb({
+                                'status': 'error',
+                                'offre': 'Erreur durant la requete. Veillez nous excuser'
                             });
                         } else {
                             cb({
@@ -220,10 +231,10 @@ class Offres {
                         connection.release();
                     });
             });
-        }else {
+        } else {
             cb({
                 'status': 'error',
-                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
             });
         }
     }
@@ -238,32 +249,74 @@ class Offres {
                 INNER JOIN candidature 
                 ON fk_idOffre = idOffre 
                 WHERE candidature.fk_idUser = ?`, [id], (error, results) => {
-                    if (error) {
-                        cb({
-                            'status': 'error',
-                            'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
-                        });
-                    } else {
-                        if (results.length > 0) {
-                            cb({
-                                'status': 'success',
-                                'candidature': results
-                            });
-                        } else {
+                        if (error) {
                             cb({
                                 'status': 'error',
-                                'idError': true,
-                                'candidature': 'Cet utilisateur n\'a pas de candidature'
+                                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                             });
+                        } else {
+                            if (results.length > 0) {
+                                cb({
+                                    'status': 'success',
+                                    'candidature': results
+                                });
+                            } else {
+                                cb({
+                                    'status': 'error',
+                                    'idError': true,
+                                    'candidature': 'Cet utilisateur n\'a pas de candidature'
+                                });
+                            }
                         }
-                    }
-                    connection.release();
-                });
+                        connection.release();
+                    });
             });
         } else {
             cb({
                 'status': 'error',
-                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occaionnée'
+                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+            });
+        }
+    }
+
+    static getCandidatureByIdFirm(idFirm, cb) {
+        var id = parseInt(idFirm);
+        if (Number.isInteger(id)) {
+            pool.getConnection(function (err, connection) {
+                connection.query(`SELECT user.idUser, user.nomUser, user.prenomUser, user.mailUser, offre.idOffre, offre.titreOffre 
+                FROM offre 
+                INNER JOIN candidature
+                ON candidature.fk_idOffre = offre.idOffre
+                INNER JOIN user
+                ON user.idUser = candidature.fk_idUser
+                WHERE offre.fk_idUser = ?
+                ORDER BY offre.idOffre`, [id], (error, results) => {
+                        if (error) {
+                            cb({
+                                'status': 'error',
+                                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
+                            });
+                        } else {
+                            if (results.length > 0) {
+                                cb({
+                                    'status': 'success',
+                                    'candidature': results
+                                });
+                            } else {
+                                cb({
+                                    'status': 'error',
+                                    'idError': true,
+                                    'candidature': 'Cet utilisateur n\'a pas reussi de candidature'
+                                });
+                            }
+                        }
+                        connection.release();
+                    });
+            });
+        } else {
+            cb({
+                'status': 'error',
+                'candidature': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
             });
         }
     }
