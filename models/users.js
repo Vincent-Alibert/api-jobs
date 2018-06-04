@@ -92,9 +92,7 @@ class Users {
         });
     }
 
-    static addUser(content, cb) {
-        console.log('content', content);
-        
+    static addUser(content, cb) {        
         var mailClean;
         var status;
         var isFirm;
@@ -178,8 +176,6 @@ class Users {
                 ],
                     (error, results) => {
                         if (error) {
-                            console.log('error',error);
-                            
                             status = 'errors';
                             if (error.code == 'ER_DUP_ENTRY') {
                                 arrayError.push('ER_DUP_ENTRY');
@@ -204,7 +200,7 @@ class Users {
 
     static getUserById(id, cb) {
         pool.getConnection(function (err, connection) {
-            connection.query(`SELECT idUser,nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,administrateur,entreprise
+            connection.query(`SELECT idUser,nomUser,prenomUser,mailUser,dateInscription,rueUser,codePostalUser,villeUser,nomEnt,latitudeEnt,longitudeEnt,photoUser,imageUser,cvUser,administrateur,entreprise
              FROM user 
              WHERE idUser = ? `, [id],
                 (error, results) => {
@@ -239,7 +235,6 @@ class Users {
             (SELECT COUNT(entreprise) FROM user WHERE entreprise = 1) AS nombreFirm, 
             (SELECT COUNT(idOffre) FROM offre) AS nombreOffre `, (error, results) => {
                     if (error) {
-                        console.log('error', error);
                         cb({
                             'status': 'error',
                             'countData': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'

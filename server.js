@@ -91,11 +91,10 @@ const storePhoto = multerPhoto.diskStorage({
         cb(null, './public/uploads/photo')
     },
     filename: function (req, file, cb) {
-        console.log('file', file);
         cb(null, file.originalname);
     }
 });
-const uploadPhoto = multerPhoto({storage: storePhoto}).single('file');
+const uploadPhoto = multerPhoto({ storage: storePhoto }).single('file');
 
 api.post('/upload/photo', (req, res, next) => {
     uploadPhoto(req, res, (err) => {
@@ -105,7 +104,7 @@ api.post('/upload/photo', (req, res, next) => {
                 'fileError': true
             });
         }
-        return res.status(200).json({'originalname':req.file.originalname, 'uploadname': req.file.filename, 'fileError': false});  
+        return res.status(200).json({ 'originalname': req.file.originalname, 'uploadname': req.file.filename, 'fileError': false });
     })
 });
 
@@ -115,21 +114,21 @@ const storeImg = multerImg.diskStorage({
         cb(null, './public/uploads/img')
     },
     filename: function (req, file, cb) {
-        
+
         cb(null, file.originalname);
     }
 });
-const uploadImg = multerImg({storage: storeImg}).single('file');
+const uploadImg = multerImg({ storage: storeImg }).single('file');
 
 api.post('/upload/img', (req, res, next) => {
     uploadImg(req, res, (err) => {
-        if (err) {       
+        if (err) {
             return res.status(501).json({
                 'typeError': 'img',
                 'fileError': true
             });
         }
-        return res.status(200).json({'originalname':req.file.originalname, 'uploadname': req.file.filename, 'fileError': false});  
+        return res.status(200).json({ 'originalname': req.file.originalname, 'uploadname': req.file.filename, 'fileError': false });
     })
 });
 
@@ -139,20 +138,20 @@ const storeCv = multerCv.diskStorage({
         cb(null, './public/uploads/cv')
     },
     filename: function (req, file, cb) {
-    cb(null, file.originalname);
+        cb(null, file.originalname);
     }
 });
-const uploadCv = multerCv({storage: storeCv}).single('file');
+const uploadCv = multerCv({ storage: storeCv }).single('file');
 
 api.post('/upload/cv', (req, res, next) => {
     uploadCv(req, res, (err) => {
-        if (err) {                        
+        if (err) {
             return res.status(501).json({
                 'typeError': 'cv',
                 'fileError': true
             });
         }
-        return res.status(200).json({'originalname':req.file.originalname, 'uploadname': req.file.filename, 'fileError': false});  
+        return res.status(200).json({ 'originalname': req.file.originalname, 'uploadname': req.file.filename, 'fileError': false });
     })
 });
 
@@ -256,12 +255,36 @@ api.get('/public/uploads/photo/:name', (request, response) => {
                 'status': 'error',
                 'data': 'image not found'
             });
-        } else {
-            console.log('Sent:', fileName);
         }
     });
 
 });
+
+/* Route CV */
+api.get('/public/uploads/cv/:name', (request, response) => {
+
+    var options = {
+        root: __dirname + '/public/uploads/cv/',
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true
+        }
+    };
+
+    var fileName = request.params.name;
+    response.sendFile(fileName, options, function (err) {
+        if (err) {
+            response.status(404).json({
+                'status': 'error',
+                'data': 'cv not found'
+            });
+        }
+    });
+
+});
+
+
 
 /* Route pour les offres */
 api.post('/offres/add', checkUserToken, (request, response) => {
@@ -319,6 +342,23 @@ api.get('/offres/user/:id', (request, response) => {
         response.json(listOffres);
     });
 });
+
+api.get('/offres/search/:term/:place?', (req, res) => {
+    const term = req.params.term.toLowerCase().trim();  
+    let place = req.params.place; 
+    offres.getAll((listOffres) => {
+        if (listOffres.status == 'success') {            
+            listClean = listOffres.offre.filter( j=> (j.titreOffre.toLowerCase().includes(term)))            
+            if (place !== 'undefined') { 
+                place = place.toLowerCase().trim();
+                listClean = listClean.filter( j=> (j.villeOffre.toLowerCase().includes(place)) )
+            }
+            res.json({ 'success': true, 'jobs': listClean });
+        } else {
+            res.json({ 'success': false });
+        }
+    });
+})
 
 api.get('/offres', (request, response) => {
     offres.getAll((listOffres) => {

@@ -1,7 +1,7 @@
 const pool = require('../configuration/db');
 
 function validateDate(date) {
-    var re = /(asap)|([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+    var re = /(asap)|((0[1-9]|[1-2][0-9]|3[0-1])\/(0[1-9]|1[0-2])\/[0-9]{4})/;
     return re.test(String(date).toLowerCase());
 }
 
@@ -30,6 +30,7 @@ class Offres {
 
         });
     }
+    
 
     static getOffresById(idOffre, cb) {
         var id = parseInt(idOffre);
@@ -88,7 +89,7 @@ class Offres {
                                 'offre': 'Une erreur est survenue, Veillez nous excuser pour la gène occasionnée'
                             });
                         } else {
-                            if (results.length > 1) {
+                            if (results.length >= 1) {
                                 cb({
                                     'status': 'success',
                                     'offre': results
@@ -140,11 +141,11 @@ class Offres {
             datePublicationOk = new Date(content.offre.datePublication);
 
             if (datePublicationOk.toString() === 'Invalid Date') {
-                arrayError.push('DateError');
+                arrayError.push('datePublication');
             }
 
             if (!validateDate(content.offre.dateDebutPoste)) {
-                arrayError.push('DateError');
+                arrayError.push('dateDebutPoste');
             }
 
             if (isNaN(latituteIsFloat) || isNaN(longitudeIsFloat)) {
